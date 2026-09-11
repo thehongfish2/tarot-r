@@ -248,7 +248,10 @@ export function createRitual(stage) {
   }
 
   function fanPose(i, count) {
-    const span = Math.min(2.2, Math.max(0.6, count * 0.045));
+    // 依可視寬度收斂扇形張角：寬螢幕邊緣不再因大角度傾斜與透視而扭曲，手機直式也不溢出
+    const visW = 2 * Math.tan(camera.fov * Math.PI / 360) * Math.max(rig.base.z, 2) * camera.aspect;
+    const cap = Math.min(1.35, 2 * Math.asin(Math.min(0.99, (visW * 0.42) / FAN_R)));
+    const span = Math.min(cap, Math.max(0.6, count * 0.045));
     const a = count === 1 ? 0 : (i / (count - 1) - 0.5) * span;
     const sc = Math.max(0.45, FAN_SCALE * (1 - 0.05 * fanSink));
     return {

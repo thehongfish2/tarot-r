@@ -253,7 +253,7 @@ async function refreshProviders(imported = null) {
     banner.innerHTML = `已从 <b>DSH · DeepSeek Harness</b> 接引 ${dsh.providers.length} 位神谕（含 ${oauthN} 位 OAuth 登录态）。凭据不返回浏览器，仅发送至所选 AI 服务。`;
   } else {
     banner.classList.remove('hidden');
-    banner.textContent = dsh.enabled === false ? '云端站点无法读取电脑上的 DSH 配置；请在下方「亲自延请一位神谕」填入自己的服务与密钥。' : '本机未发现可用的 DSH Provider。请先在 DSH 中配置，再点击重新导入。';
+    banner.textContent = dsh.enabled === false ? '雲端站點：點下方免費預設、貼上 API Key 即可連接神谕。' : '本机未发现可用的 DSH Provider。请先在 DSH 中配置，再点击重新导入。';
   }
   // 默认选择：优先有模型的 DSH provider
   if (!providerState.selectedId || !getProvider(providerState.selectedId)) {
@@ -394,6 +394,8 @@ function wireSettings() {
   // 一鍵預設（OpenCode Zen 免費模型等）：自動填入表單，僅需貼上 API Key
   document.querySelectorAll('[data-preset]').forEach(btn => {
     btn.addEventListener('click', () => {
+      const fold = $('#manualFold');
+      if (fold && !fold.open) fold.open = true;
       $('#cpName').value = btn.dataset.name;
       $('#cpKind').value = btn.dataset.kind;
       $('#cpBase').value = btn.dataset.base;

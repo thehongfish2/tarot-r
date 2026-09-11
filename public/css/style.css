@@ -570,3 +570,25 @@ body {
 /* OpenCode Zen 一鍵預設 */
 .preset-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
 .preset-row .btn { flex: 1 1 auto; }
+
+/* 設定面板精簡化 · 手動表單摺疊 */
+.manual-fold { border-top: 1px solid rgba(212, 176, 115, 0.12); padding-top: 14px; margin-top: 6px; }
+.manual-fold summary {
+  cursor: pointer; list-style: none; display: flex; align-items: center; gap: 10px;
+  font-size: 13px; letter-spacing: 0.3em; color: var(--gold); padding: 6px 2px;
+  transition: color 0.3s;
+}
+.manual-fold summary::-webkit-details-marker { display: none; }
+.manual-fold summary::before {
+  content: ""; width: 5px; height: 5px; flex: none;
+  border: 1px solid var(--gold); transform: rotate(45deg);
+  transition: transform 0.35s var(--ease-out);
+}
+.manual-fold[open] summary::before { transform: rotate(225deg); }
+.manual-fold summary:hover { color: var(--gold-bright); }
+.manual-fold .form-grid { margin-top: 14px; }
+
+@media (max-width: 760px) {
+  /* 設定面板避開頂欄品牌區，不再重疊 */
+  #settingsPanel { padding-top: calc(64px + env(safe-area-inset-top)); }
+}

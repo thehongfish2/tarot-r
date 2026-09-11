@@ -129,7 +129,7 @@
       <div id="dropzone" class="dropzone">
         <div class="drop-inner">
           <div class="drop-glyph"></div>
-          <div class="drop-text">将牌面照片放入此圣域，或点击选取</div>
+          <div class="drop-text">将牌面照片���入此圣域，或点击选取</div>
           <div class="drop-sub">支持多张 · 依上传顺序对应牌位</div>
         </div>
         <input type="file" id="photoInput" accept="image/*" multiple hidden>
@@ -156,15 +156,17 @@
       <button id="dshImportBtn" class="btn ghost small" disabled>导入本机 DSH</button>
         <p id="dshConsentNote" class="settings-note">正在读取本机 DSH 导入与续期设置……</p>
     </div>
-    <div id="providerList" class="provider-list"></div>
     <div class="settings-section">
-      <div class="section-title">亲自延请一位神谕</div>
+      <div class="section-title">快速延請 · 免費神谕</div>
       <div class="preset-row">
         <button type="button" class="btn ghost small" data-preset data-name="OpenCode Zen（免費）" data-kind="openai" data-base="https://opencode.ai/zen/v1">OpenCode Zen 免費模型</button>
         <button type="button" class="btn ghost small" data-preset data-name="OpenCode Zen · Muse Spark" data-kind="responses" data-base="https://opencode.ai/zen/v1">Zen · Muse Spark Free</button>
         <button type="button" class="btn ghost small" data-preset data-name="Google Gemini（AI Studio 免費額度）" data-kind="openai" data-base="https://generativelanguage.googleapis.com/v1beta/openai">Google Gemini 免費額度</button>
       </div>
-      <p class="settings-note">OpenCode Zen 提供限時免費模型：big-pickle、mimo-v2.5-free、ling-3.0-flash-fin-free、nemotron-3-ultra-free、nemotron-3.5-lightning-free（「OpenCode Zen 免費模型」鈕）；muse-spark-1.3-contributor-free 走 Responses 端點（「Zen · Muse Spark Free」鈕）。到 opencode.ai 登入 Zen 複製 API Key 貼於下方。若 Zen 免費型號全部持續回 429，代表對未儲值帳號整體限流，建議改用 Google：到 aistudio.google.com 免費取得 API Key（不需信用卡），點「Google Gemini 免費額度」鈕後貼上，模型選 gemini-3.7-flash 或 gemini-3.5-flash。注意：Zen 上的 Gemini 系列走 Google 專有協議、本站不相容；免費模型的對話內容可能被服務方用於訓練，請勿送出私密資訊。</p>
+      <p class="settings-note">點預設自動填位址，貼上 Key 後於下方載入。Zen：opencode.ai 註冊取得（免費型號全部 429 表示限流，請改用 Gemini）；Gemini：aistudio.google.com 免費取得，模型填 gemini-3.7-flash。對話內容可能被服務方用於訓練，請勿送出私密資訊。</p>
+      <div id="providerList" class="provider-list"></div>
+      <details class="manual-fold" id="manualFold">
+      <summary>手動延請其他神谕</summary>
       <div class="form-grid">
         <input id="cpName" placeholder="名号（如 My Gateway）">
         <select id="cpKind">
@@ -176,7 +178,8 @@
         <input id="cpKey" placeholder="API Key" type="password">
         <button id="cpAdd" class="btn ghost small">载 入 议 会</button>
       </div>
-      <p class="settings-note">自定义密钥仅保留在本页内存，刷新后需重新添加。问题、牌阵和实拍照片会发送到所选 AI 服务；密钥用于该服务认证。请勿上传不愿分享的个人信息。</p>
+      <p class="settings-note">自定义密钥仅保留在本页内存，刷新后需重新添加。问题、牌阵和实拍照片会发送到所选 AI 服务；密钥用于该服务认证。</p>
+      </details>
     </div>
     </div>
   </aside>
