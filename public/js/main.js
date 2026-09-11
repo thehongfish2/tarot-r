@@ -391,6 +391,16 @@ function wireSettings() {
       button.textContent = '重试导入 DSH';
     } finally { button.disabled = false; }
   });
+  // 一鍵預設（OpenCode Zen 免費模型等）：自動填入表單，僅需貼上 API Key
+  document.querySelectorAll('[data-preset]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      $('#cpName').value = btn.dataset.name;
+      $('#cpKind').value = btn.dataset.kind;
+      $('#cpBase').value = btn.dataset.base;
+      $('#cpKey').focus();
+      toast(`已填入「${btn.dataset.name}」位址，貼上 API Key 後點「载 入 议 会」`);
+    });
+  });
   $('#cpAdd').addEventListener('click', async () => {
     const label = $('#cpName').value.trim();
     const kind = $('#cpKind').value;

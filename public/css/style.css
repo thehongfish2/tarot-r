@@ -566,3 +566,7 @@ body {
   .phase, .hidden { transition-duration: 0.2s; }
   .spread-item, .btn, .orb-btn { transition-duration: 0.1s; }
 }
+
+/* OpenCode Zen 一鍵預設 */
+.preset-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.preset-row .btn { flex: 1 1 auto; }

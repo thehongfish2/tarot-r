@@ -161,9 +161,18 @@ export async function onRequestPost({ request }) {
   }
 
   const signal = AbortSignal.any([request.signal, AbortSignal.timeout(120000)]);
+  const post = (p) => fetch(endpoint, { method: 'POST', headers, body: JSON.stringify(p), signal, redirect: 'manual' });
   let up;
   try {
-    up = await fetch(endpoint, { method: 'POST', headers, body: JSON.stringify(payload), signal, redirect: 'manual' });
+    up = await post(payload);
+    // 相容性：部分网关（含 OpenCode Zen 的某些後端）拒絕可選參數；HTTP 400 時精簡重試一次
+    if (up.status === 400) {
+      await up.body?.cancel().catch(() => {});
+      const slim = { ...payload };
+      delete slim.stream_options;
+      delete slim.store;
+      up = await post(slim);
+    }
   } catch { return jsonFail(502, '无法连接 AI 服务，请检查服务地址与网络。'); }
   if (!up.ok) {
     await up.body?.cancel().catch(() => {});

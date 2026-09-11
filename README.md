@@ -26,6 +26,14 @@ src/api/health.js   活性檢查
 wrangler.toml       main + [assets] 設定
 ```
 
+## OpenCode Zen 免費模型
+
+設定頁內建一鍵預設：點「OpenCode Zen 免費模型」後只需貼上 Zen API Key（到 [opencode.ai](https://opencode.ai) 登入 Zen 取得），載入後在模型下拉選單選擇 `-free` 結尾的型號（或 `big-pickle`）即可零費用解讀。`muse-spark-1.3-contributor-free` 走 Responses 端點，請改用「Zen · Muse Spark Free」預設鈕。
+
+代理層內建相容處理：上游對可選參數回 HTTP 400 時會自動精簡重試一次。
+
+注意：依 Zen 政策，免費模型的提示與回覆可能被用於模型訓練——請勿在占問或照片中放入私密資訊。
+
 ## 功能
 
 - 3D 星雲聖壇：洗牌渦旋、扇形選牌、飛牌入位、整組翻牌揭示、星爆粒子
