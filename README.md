@@ -1,18 +1,30 @@
-# ARCANUM 星軌塔羅聖儀 · Cloudflare Pages 雲端版
+# ARCANUM 星軌塔羅聖儀 · Cloudflare 雲端版
 
-[Tarot Ritual](https://github.com/moonlin1213/tarot-ritual)（本機優先的 3D 塔羅儀式）的 Cloudflare Pages 移植：靜態前端 + Pages Functions 代理，訪客自備 LLM Base URL + API Key 即可獲得 AI 解讀。不需要自己的電腦一直開著。
+[Tarot Ritual](https://github.com/moonlin1213/tarot-ritual)（本機優先的 3D 塔羅儀式）的 Cloudflare 移植：**單一 Worker + 靜態資產**（Cloudflare 自 2026 起建議的新專案架構）。訪客自備 LLM Base URL + API Key 即可獲得 AI 解讀，站主不需要自己的電腦一直開著。
 
-## 部署：GitHub + Pages Git 整合
+## 部署：GitHub + Git 整合
 
 1. 在 GitHub 建立新 repo，把本專案全部檔案推上去。
-2. Cloudflare Dashboard → **Workers & Pages** → **Create** → **Pages** → **Connect to Git**。
-3. 選擇該 repo，建置設定：
-   - Framework preset：**None**
+2. Cloudflare Dashboard → **Workers & Pages** → **Create** → **Import repository / Connect to Git**，選擇該 repo。
+3. 建置設定：
    - Build command：留空
-   - Build output directory：`public`
-4. **Save and Deploy**。之後每次 `git push` 自動重新部署。
+   - Deploy command：`npx wrangler deploy`（預設值即是）
+4. 部署。網址為 `https://tarot-ritual.<你的子網域>.workers.dev`（前綴取自 `wrangler.toml` 的 `name`，可自行修改）。之後每次 `git push` 自動重新部署。
 
-不需要任何環境變數。**不要**把自己的 API Key 放進環境變數——金鑰由每位訪客在自己的瀏覽器設定頁輸入，只存在頁面記憶體中。
+不需要任何環境變數。**不要**把自己的 API Key 放進環境變數——金鑰由每位訪客在自己瀏覽器的設定頁輸入，只存在頁面記憶體中，刷新即消失。
+
+## 架構
+
+```
+public/             前端（Three.js 3D 儀式、牌庫、字體）+ _headers 安全標頭
+src/worker.js       Worker 入口：/api/* 路由 + API 安全標頭
+src/api/chat.js     三協議串流代理（OpenAI 相容 / OpenAI Responses / Anthropic）
+src/api/models.js   模型列表探測
+src/api/dsh.js      雲端無本機 DSH，固定回報「未發現」讓前端降級
+src/api/dsh-import.js  同上
+src/api/health.js   活性檢查
+wrangler.toml       main + [assets] 設定
+```
 
 ## 功能
 
@@ -20,12 +32,11 @@
 - 五種牌陣（依問擇陣或自行選陣）、正逆位、牌義查閱
 - AI 解讀：OpenAI 相容（chat/completions）、OpenAI Responses、Anthropic Messages 三種協議，SSE 串流
 - 實景占卜：拍照上傳實體牌面，AI 辨識牌名與正逆位
-- 行動裝置優化（見下）
 
 ## 行動裝置與動效優化（本移植版新增）
 
 - `viewport-fit=cover` + safe-area-inset：瀏海機頂欄、底部手勢列不再遮擋內容
-- 解讀面板在 ≤760px 寬度改為**底部抽屜**，相機取景同步改為垂直讓位（`fitCamera` 手機分支）
+- 解讀面板在 ≤760px 寬度改為**底部抽屜**，相機取景同步改為垂直讓位
 - 卡牌細讀改為底部全寬卡片；設置面板全寬；按鈕觸控目標 ≥44px
 - 輸入框字體 ≥16px，避免 iOS 聚焦時自動放大頁面
 - 面板改用 `svh` 動態視高，網址列伸縮不再造成版面跳動
@@ -34,10 +45,9 @@
 
 ## 與原版的差異
 
-- 移除本機專屬功能：DSH 匯入、Codex 續期、cove-tarot-companion 陪伴接回（`#companion-config` 不存在時前端自動以單機模式運作）
-- `/api/chat`、`/api/models` 由 Node 伺服器改寫為 Pages Functions，僅保留「自訂神谕」路徑；行為與錯誤格式忠於原版
-- `/api/dsh` 系列回報「未發現」，設定頁的 DSH 匯入按鈕已隱藏
-- 全站安全標頭由 `functions/_middleware.js` 套用（CSP、nosniff、DENY frame 等）
+- 本機 Node 伺服器（server.mjs）→ Cloudflare Worker + 靜態資產；`/api/chat`、`/api/models` 行為與錯誤格式忠於原版
+- 移除本機專屬功能：DSH 匯入、Codex 續期、cove-tarot-companion 陪伴接回（前端在無 `#companion-config` 時自動以單機模式運作）
+- 全站安全標頭：靜態資產由 `public/_headers`、API 回應由 Worker 統一套用
 
 ## 隱私
 
