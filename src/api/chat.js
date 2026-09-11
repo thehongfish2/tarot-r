@@ -163,19 +163,30 @@ export async function onRequestPost({ request }) {
   const signal = AbortSignal.any([request.signal, AbortSignal.timeout(120000)]);
   const post = (p) => fetch(endpoint, { method: 'POST', headers, body: JSON.stringify(p), signal, redirect: 'manual' });
   let up;
+  let current = payload;
   try {
-    up = await post(payload);
+    up = await post(current);
     // 相容性：部分网关（含 OpenCode Zen 的某些後端）拒絕可選參數；HTTP 400 時精簡重試一次
     if (up.status === 400) {
       await up.body?.cancel().catch(() => {});
       const slim = { ...payload };
       delete slim.stream_options;
       delete slim.store;
-      up = await post(slim);
+      current = slim;
+      up = await post(current);
+    }
+    // 免費模型常見 429（流量/額度上限）：遵循 Retry-After 自動重試至多 2 次
+    for (let attempt = 0; up.status === 429 && attempt < 2; attempt++) {
+      const ra = Number(up.headers.get('retry-after'));
+      await up.body?.cancel().catch(() => {});
+      const waitMs = Math.min(Number.isFinite(ra) && ra > 0 ? ra * 1000 : 2500 * (attempt + 1), 8000);
+      await new Promise(r => setTimeout(r, waitMs));
+      up = await post(current);
     }
   } catch { return jsonFail(502, '无法连接 AI 服务，请检查服务地址与网络。'); }
   if (!up.ok) {
     await up.body?.cancel().catch(() => {});
+    if (up.status === 429) return jsonFail(429, '该模型目前流量超限或免费额度已达上限；请稍候再点「再问一次」，或改用其他免费型号（若选的是付费模型，请确认账户余额）。');
     return jsonFail(502, `AI 服务返回 HTTP ${up.status}，请检查所选模型、凭据与服务地址。`);
   }
 

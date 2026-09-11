@@ -26,13 +26,16 @@ src/api/health.js   活性檢查
 wrangler.toml       main + [assets] 設定
 ```
 
-## OpenCode Zen 免費模型
+## 免費模型：OpenCode Zen 或 Google AI Studio
 
-設定頁內建一鍵預設：點「OpenCode Zen 免費模型」後只需貼上 Zen API Key（到 [opencode.ai](https://opencode.ai) 登入 Zen 取得），載入後在模型下拉選單選擇 `-free` 結尾的型號（或 `big-pickle`）即可零費用解讀。`muse-spark-1.3-contributor-free` 走 Responses 端點，請改用「Zen · Muse Spark Free」預設鈕。
+設定頁內建三個一鍵預設，點擊自動填好位址與協議，只需貼上 API Key：
 
-代理層內建相容處理：上游對可選參數回 HTTP 400 時會自動精簡重試一次。
+- **OpenCode Zen 免費模型** — 到 [opencode.ai](https://opencode.ai) 登入 Zen 取得 Key；載入後在模型下拉選單選 `-free` 結尾的型號（或 `big-pickle`）。`muse-spark-1.3-contributor-free` 走 Responses 端點，請用「Zen · Muse Spark Free」鈕。注意：Zen 上的 Gemini 系列走 Google 專有協議，本站不相容；免費型號若**全部**持續 429，代表 Zen 對未儲值帳號整體限流，建議改用 Google。
+- **Google Gemini 免費額度** — 到 [aistudio.google.com](https://aistudio.google.com) 免費取得 API Key（不需信用卡）；模型選 `gemini-3.7-flash` 或 `gemini-3.5-flash`。免費額度約每分鐘 10–30 次請求，占卜綽綽有餘。
 
-注意：依 Zen 政策，免費模型的提示與回覆可能被用於模型訓練——請勿在占問或照片中放入私密資訊。
+代理層內建相容處理：上游對可選參數回 HTTP 400 時自動精簡重試一次；429 時依 `Retry-After` 自動重試至多 2 次。
+
+注意：免費模型的對話內容可能被服務方用於訓練——請勿在占問或照片中放入私密資訊。
 
 ## 功能
 
@@ -48,8 +51,13 @@ wrangler.toml       main + [assets] 設定
 - 卡牌細讀改為底部全寬卡片；設置面板全寬；按鈕觸控目標 ≥44px
 - 輸入框字體 ≥16px，避免 iOS 聚焦時自動放大頁面
 - 面板改用 `svh` 動態視高，網址列伸縮不再造成版面跳動
-- WebGL 效能：粗指針裝置 pixelRatio 上限 1.5、星辰/金塵粒子量降至 55%、分頁隱藏時暫停渲染省電
+- WebGL 效能：粗指針裝置 pixelRatio 上限 1.5、星辰/金塵粒子量降至 55%、���頁隱藏時暫停渲染省電
 - `prefers-reduced-motion`：降低視差與環境漂移速度、停用入場動畫
+
+## 疑難排解
+
+- **神谕中断：HTTP 429** — 上游模型的流量或免費額度達上限（免費模型尖峰時段常見）。代理已內建依 `Retry-After` 自動重試至多 2 次；仍失敗時稍候再點「再 问 一 次」，或到設定頁換另一個 `-free` 型號。付費模型請檢查 Zen 帳戶餘額。若 Zen 免費型號**全部**持續 429，代表對未儲值帳號的整體限流，請改用 Google Gemini 預設。
+- **模型探測失敗** — 多為 Key 錯誤或上游暫時故障；點模型下拉選單可重試，也可直接手動填模型 ID。
 
 ## 與原版的差異
 
