@@ -1,0 +1,7 @@
+{
+  "name": "tarot-ritual-pages",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "ARCANUM 星軌塔羅聖儀 · Cloudflare Pages 雲端版（移植自 Tarot Ritual）"
+}
